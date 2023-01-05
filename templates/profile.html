@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block body %}
+<div class="d-flex align-items-center justify-content-between mx-5 my-5">
+<h1 class="glow">{{ player }}'s Profile</h1>
+<form action="/logout">
+    <input class=" btn btn-lg btn-warning" type="submit" action="/logout" value="Log Out">
+</form>
+</div>
+<div class="container w-75">
+<table class="table table-light">
+    <thead>
+      <tr>
+        <th scope="col">RANKING</th>
+        <th scope="col">GAME</th>
+        <th scope="col">HISCORE</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+{% for score in scores_list %}
+{% set rank = score[0] %}
+{% set name = game_names[loop.index0] %}
+{% set hiscore = score[3] %}
+{% if rank == 1 %}
+    <tr class="table-success">
+    <th scope="row">{{ rank }}</th>
+    <td>{{ name }}</td>
+    <td>{{ hiscore }}</td>
+    </tr> 
+    </tbody>
+{% else %}
+    <tr>
+    <th scope="row">{{ rank }}</th>
+    <td>{{ name }}</td>
+    <td>{{ hiscore }}</td>
+    </tr> 
+    </tbody>
+{% endif %}
+{% endfor %}
+</table>
+</div>
+{% endblock %}

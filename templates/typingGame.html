@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Typing Game</title>
+    <link rel="stylesheet" href="/static/typingGame.css">
+  </head>
+  <body data-body>
+	  <script src="/static/typingGame.js" defer></script>
+    <div class="header">
+      <h1 class="title"><a href="/">HOME</a></h1>
+      <div data-scoreDisplay class="scoreDisplay"><p>SCORE: 0</p></div>
+      <div class="formContainer">
+        <form action="/Typing Game" method="POST">
+          <input type="hidden" data-hiddenHiscore name="hiscore" value="0">
+          <button class="submit" type="submit">SUBMIT YOUR HIGHSCORE!</button>
+        </form>
+        <div class="highScore"><p>HIGH SCORE: </p></div>
+        <div data-highScore class="highScore">{{ hiscore }}<p></p></div>
+      </div>
+    </div>
+    <div class="background">
+    <div class="gameScreen" data-gameScreen></div>
+    <div class="typingScreen" >
+    <input id="playerInput" type="text" placeholder="Click here to begin game! Type the word to score points!">
+    </div>
+    </div>
+  </body>
+</html>

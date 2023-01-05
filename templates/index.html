@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block style %}
+
+img {
+    max-height: 10vw;
+    max-width: 10vw;
+}
+a {
+    color: black;
+}
+a:hover {
+    color: #00fa00;
+}
+{% endblock %}
+
+{% block body %}
+
+{% for game in games %}
+    {% set name = game[0] %}
+    {% set image = game[1] %}
+    {% set descrip = game[2] %}
+    <div class="d-flex justify-content-evenly container mx-auto my-4 w-75 bg-light border">
+        <div class="d-flex justify-content-center my-2 w-25 border img"><img class="img-thumbnail" src="{{ image }}"></div>
+        <div class="d-flex justify-content-center align-items-center fs-1 my-2 w-25 border"><a class="text-decoration-none" href="/{{ name }}">{{ name }}</a></div>
+        <div class="d-flex justify-content-center align-items-center my-2 px-2 fs-4 w-50 border">{{ descrip }}</div>
+    </div>
+{% endfor %}
+
+{% endblock %}

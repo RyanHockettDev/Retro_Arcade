@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block style %}
+.main {
+    margin-top: 3%;
+}
+{% endblock %}
+
+{% block body %}
+    <div class="main d-flex flex-column justify-content-around border mx-auto w-50 p-5 bg-light rounded-3">
+    <h1 class="mx-auto">REGISTER NEW USER</h1>
+    {% from "includes/_formhelpers.html" import render_field %}
+    <form method="POST" action="">
+        <div class="form-group my-4 d-flex flex-column align-items-center">
+            {{render_field(form.name, class_="form-control")}}
+        </div>
+        <div class="form-group my-4 d-flex flex-column align-items-center">
+            {{render_field(form.password, class_="form-control")}}
+        </div>
+        <div class="form-group my-4 d-flex flex-column align-items-center">
+            {{render_field(form.confirm, class_="form-control")}}
+        </div>
+        <div class="d-flex flex-column align-items-center"><input type="submit" class="btn btn-dark my-2" value="REGISTER"></div>
+    </form>
+    </div>
+{% endblock %}

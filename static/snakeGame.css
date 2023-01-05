@@ -1,0 +1,120 @@
+* {
+  padding: 0;
+  margin: 0;
+	color: white;
+	overflow-x: hidden;
+	font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+	background: linear-gradient(to bottom right, #30343F 10%, black 50%, #30343F 90%);
+}
+.header {
+	width: 100vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	padding: 0 0 1%;
+	border-bottom: 2px solid red;
+}
+.header * {
+	font-size: 3vw;
+}
+.startGame {
+	font-size: 3.2vw;
+}
+.gameScreen {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	margin-top: 2%;
+} 
+.gameGrid {
+	border: 2px solid #1DD73C;
+	height: 40vw;
+	width: 40vw;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	background-color: rgba(0, 0, 0, 45%);
+}
+.gameGrid > div {
+	height: 2vw;
+	width: 2vw;
+	border: 1px solid #1DD73C;
+	box-sizing:border-box;
+}
+
+.spaceStart {
+	padding-bottom: 8vw;
+}
+.directions, .startGame {
+	width: 20%;
+	text-align: center;
+}
+.directions {
+	display: flex;
+	flex-direction: column;
+	font-size: 2.5vw;
+}
+.directions > p {
+	margin: 6% auto;
+}
+.redText {
+	color: rgb(200, 0, 0);
+}
+.green {
+	color: #1DD73C;
+}
+.gradient {
+	font-size: 3.2vw;
+	background: linear-gradient(to bottom right, red 25%, yellow 50%, red 75%);
+	-webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.snake {
+	background-color: #0C5A19;
+} 
+.snakeHead {
+	background-color: #1DD73C;
+} 
+.snakeTail {
+	background-color: #149028;
+}
+.red {
+	background: url(/static/apple.png);
+	background-size: contain;
+}
+.highScoreFlex {
+	display: flex;
+}
+.highScore {
+	color: #F2BB05;
+}
+button{
+	color: black;
+	height: 6vw;
+	width: 6vw;
+	font-weight: bold;
+	border: 5px solid rgb(200, 0, 0);
+	background-color:rgba(255,255,255, 75%);
+	font-size: 1.5vw;
+}
+button:hover {
+	background-color:rgba(255,255,255, 90%);
+}
+.buttons {
+	padding-top: 1vw;
+	display: flex;
+	justify-content: space-evenly;
+	flex-wrap: nowrap;
+}
+.form {
+	overflow-wrap: break-word;
+}
+.submit {
+	font-size: 1vw;
+	background-color: #1DD73C;
+	width: 8vw;
+	height: 4vw;
+}

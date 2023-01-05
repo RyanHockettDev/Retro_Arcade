@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-center border mx-auto mt-5 w-50 p-5 mb-4 bg-light rounded-3">
+<div>
+    <form action="" method="POST" class="d-flex flex-column justify-content-evenly">
+        <div class="form-group">
+            <label class="text-center" for="name">USERNAME:</label><br>
+            <input class="mb-4 form-control" type="text" id="name" name="name" value={{request.form.name}}><br>
+        </div>
+        <div class="form-group">
+            <label class="text-center" for="password">PASSWORD:</label><br>
+            <input class="mb-4 form-control" type="password" id="password" name="password"><br>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-success" value="LOG IN">
+        </div>
+</form>
+</div>
+</div>
+
+{% endblock %}
