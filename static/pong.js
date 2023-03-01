@@ -23,7 +23,7 @@ let quarterRight = width * .675;
 let level = 1;
 
 var playerScore = 0;
-var cpuScore = 10;
+var cpuScore = 0;
 
 var gameRun = false;
 var gameEnd = false;
