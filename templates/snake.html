@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNAKE!</title>
-    <link href="/static/snakeGame.css" rel="stylesheet">
-    <script src="/static/snakeGame.js" defer></script>
-</head>
-<body>
-    <div class="header">
-        <h1><a href="/">HOME</a></h1>
-        <div data-scoreDisplay class="scoreDisplay"><p>SCORE:  </p></div>
-        <div data-form class="form">
-            <form action="/SNAKE!" method="POST">
-                <input type="hidden" data-hiddenHiscore name="hiscore" value="0">
-                <button class="submit" type="submit">SUBMIT YOUR HIGHSCORE!</button>
-            </form>
-        </div>
-        <div  class="highScoreFlex">
-            <div class="highScore">HIGH SCORE: </div>
-            <div class="highScore" data-highScore>{{ hiscore }}</div>
-        </div>
-    </div>
+{% extends "gamesLayout.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block body %}
     <div class="gameScreen">
         <div class="startGame" data-startGame>
             <p class="spaceStart">PRESS SPACE TO START</p>
@@ -42,5 +25,4 @@
             <p><span class="gradient">GAME OVER!</span></p>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

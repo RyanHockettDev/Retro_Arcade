@@ -6,11 +6,11 @@
 
 {% block body %}
 {% for game in games %}
-{% set title = game[1] %}
+{% set title = titles[loop.index0] %}
 {% set names = names_all[loop.index0] %}
 {% set scores = scores_all[loop.index0] %}
 <div class="container d-flex flex-column align-items-center border border-3 my-5 w-75 pt-3">
-<div class="h2 pb-3 glow">{{ title }}</div>
+<div class="h2 pb-3 glow">{{ title|upper }}</div>
 <table class="table table-light">
     <thead>
         <tr>

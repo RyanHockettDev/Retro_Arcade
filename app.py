@@ -1,10 +1,22 @@
-from flask import Flask, render_template, flash, request, redirect, url_for, session, logging
+from flask import Flask, render_template, flash, request, redirect, url_for, session
 import sqlite3
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from wtforms import Form, StringField, PasswordField, validators
 from passlib.hash import sha256_crypt
+import logging
+
+app = Flask(__name__)
+
+if app.debug:
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "Your_secret_string"
+app.debug = True
 
 def name_check(s):
     if "name" in s:
@@ -13,13 +25,35 @@ def name_check(s):
         name = "Player One"
     return name
 
+"""
+retro_arcade.db schema
+
+CREATE TABLE users(id INTEGER PRIMARY KEY  name TEXT NOT NULL  password TEXT NOT NULL);
+CREATE TABLE hiscore(id INTEGER  game_id INTEGER  hiscore INTEGER 
+FOREIGN KEY(id) REFERENCES users(id)  FOREIGN KEY(game_id) REFERENCES games(game_id));
+CREATE TABLE hiscores(id INTEGER  game_id INTEGER  hiscore INTEGER 
+FOREIGN KEY(id) REFERENCES users(id)  FOREIGN KEY(game_id) REFERENCES games(game_id));
+CREATE TABLE games(game_id INTEGER PRIMARY KEY  game_name TEXT NOT NULL  description TEXT NOT NULL);
+
+"""
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     player = name_check(session)
     conn = sqlite3.connect("retro_arcade.db")
     cur = conn.cursor()
-    g = cur.execute("SELECT game_name, preview_image, description FROM games")
+    g = cur.execute("SELECT * FROM games")
     games = g.fetchall()
+    if request.method == "POST":
+        gameName = request.form["gameName"]
+        desc = request.form["desc"]
+        cur.execute("INSERT INTO games (game_name, description) VALUES(?, ?)", (gameName, desc,))
+        conn.commit()
+        cur.execute("SELECT game_id FROM games WHERE game_name = ?", (gameName,))
+        gameId = cur.fetchone()
+        cur.close()
+        flash("NEW GAME INTEGRATED. ID = " + str(gameId[0]), "info")
+        return redirect(url_for("profile"))
     cur.close()
 
     return render_template("index.html", player=player, games=games)
@@ -37,7 +71,7 @@ def login():
         conn = sqlite3.connect("retro_arcade.db")
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        result = cur.execute("SELECT password FROM users WHERE name = ?", (name,))
+        cur.execute("SELECT password FROM users WHERE name = ?", (name,))
         data = cur.fetchone()
         if data != None:
             password = data["password"]
@@ -59,6 +93,9 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     player = name_check(session)
+    if "name" in session:
+        flash("Please logout to register a new username!", "warning")
+        return redirect(url_for("profile"))
     form = RegisterForm(request.form)
 
     if request.method == "POST" and form.validate():
@@ -66,7 +103,7 @@ def register():
         password = sha256_crypt.hash(str(form.password.data))
         conn = sqlite3.connect("retro_arcade.db")
         cur = conn.cursor()
-        userCheck = cur.execute("SELECT id FROM users WHERE name = ?", (name,))
+        cur.execute("SELECT id FROM users WHERE name = ?", (name,))
         result = cur.fetchone()
 
         if result == None:
@@ -86,6 +123,9 @@ def register():
 def profile():
     if "name" in session:
         player = session["name"]
+        admin = 0
+        if player == "GM1996":
+            admin = 15698
         conn = sqlite3.connect("retro_arcade.db")
         cur = conn.cursor()
 
@@ -98,12 +138,12 @@ def profile():
         if scores == None:
             flash("You have no scores to display! Go play some games!", "warning")
             cur.close()
-            return render_template("profile.html", player=player)
+            return render_template("profile.html", player=player, admin=admin)
         else:
             cur.execute("SELECT ROW_NUMBER() OVER (PARTITION BY game_id ORDER BY hiscore DESC) RowNum, id, game_id, hiscore FROM hiscores")
             scores = cur.fetchall()
             scores_list = []
-            game_names = []
+            titles = []
 
             for i in range(len(scores)):
                 if scores[i][0] == user_id:
@@ -112,11 +152,11 @@ def profile():
             for i in range(len(scores_list)):
                 gameId = scores_list[i][2]
                 cur.execute("SELECT game_name FROM games WHERE game_id = ?", (gameId,))
-                gameName = cur.fetchone()[0]
-                game_names.append(gameName)
+                title = cur.fetchone()[0]
+                titles.append(title)
 
             cur.close()
-            return render_template("profile.html", player=player, scores_list=scores_list, game_names=game_names)
+            return render_template("profile.html", player=player, scores_list=scores_list, titles=titles, admin=admin)
     else:
         flash("Log in to access your profile!", "info")
         return redirect(url_for("login"))
@@ -128,19 +168,22 @@ def logout():
     flash("You are now logged out", "info")
     return redirect(url_for("login"))
 
-@app.route("/SNAKE!", methods=["GET", "POST"])
-def snake():
+
+@app.route("/loadGame/<gameId>", methods=["GET", "POST"])
+def loadGame(gameId):
+    hiscoreDB = 0
+    conn = sqlite3.connect("retro_arcade.db")
+    cur = conn.cursor()
+
+    cur.execute("SELECT game_name FROM games WHERE game_id = ?", (gameId,))
+    gameName = cur.fetchone()[0]
+    render = gameName + ".html"
+    
     if "name" in session:
         name = session["name"]
 
-        conn = sqlite3.connect("retro_arcade.db")
-        cur = conn.cursor()
-
         cur.execute("SELECT id FROM users WHERE name = ?", (name,))
         userId = cur.fetchone()[0]
-
-        cur.execute("SELECT game_id FROM games WHERE game_name = 'SNAKE!'")
-        gameId = cur.fetchone()[0]
 
         cur.execute("SELECT hiscore FROM hiscores WHERE id = ? AND game_id = ?", (userId, gameId,))
         hiscoreDB = cur.fetchone()
@@ -148,65 +191,28 @@ def snake():
         if request.method == "POST":
             hiscore = int(request.form["hiscore"])
             if hiscoreDB == None:
-                newScore = "INSERT INTO hiscores (id, game_id, hiscore) VALUES(?,?,?)"
-                cur.execute(newScore, (userId, gameId, hiscore))
+                cur.execute("INSERT INTO hiscores (id, game_id, hiscore) VALUES(?,?,?)", (userId, gameId, hiscore))
                 conn.commit()
-                return render_template("snake.html", hiscore=hiscore)
+                return render_template(render, hiscore=hiscore, game=gameName, player=name)
             elif hiscoreDB[0] < hiscore:
                 cur.execute("UPDATE hiscores SET hiscore = ? WHERE id = ? AND game_id =?", (hiscore, userId, gameId,))
                 conn.commit()
-                return render_template("snake.html", hiscore=hiscore)
+                return render_template(render, hiscore=hiscore, game=gameName, player=name)
             else:
-                return render_template("snake.html", hiscore=hiscore)
+                return render_template(render, hiscore=hiscore, game=gameName, player=name)
         else:
             if hiscoreDB == None:
-                return render_template("snake.html")
+                return render_template(render, hiscore=0, game=gameName, player=name)
             else:
                 hiscore = hiscoreDB[0]
-                return render_template("snake.html", hiscore=hiscore)
+                return render_template(render, hiscore=hiscore, game=gameName, player=name)
 
-        cur.close()
-
-    else:
-        return render_template("snake.html")
-
-@app.route("/Typing Game", methods=["GET", "POST"])
-def typingGame():
-    name = session["name"]
-
-    conn = sqlite3.connect("retro_arcade.db")
-    cur = conn.cursor()
-
-    cur.execute("SELECT id FROM users WHERE name = ?", (name,))
-    userId = cur.fetchone()[0]
-
-    cur.execute("SELECT game_id FROM games WHERE game_name = 'Typing Game'")
-    gameId = cur.fetchone()[0]
-
-    cur.execute("SELECT hiscore FROM hiscores WHERE id = ? AND game_id = ?", (userId, gameId,))
-    hiscoreDB = cur.fetchone()
-
-    if request.method == "POST":
-        hiscore = int(request.form["hiscore"])        
-        if hiscoreDB == None:
-            cur.execute("INSERT INTO hiscores (id, game_id, hiscore) VALUES(?,?,?)", (userId, gameId, hiscore))
-            conn.commit()
-            return render_template("typingGame.html", hiscore=hiscore)
-        elif hiscoreDB[0] < hiscore:
-            updateScore = "UPDATE hiscores SET hiscore = ? WHERE id = ? AND game_id =?"
-            cur.execute(updateScore, (hiscore, userId, gameId,))
-            conn.commit()
-            return render_template("typingGame.html", hiscore=hiscore)
-        else:
-            return render_template("typingGame.html", hiscore=hiscore)
-    else:
-        if hiscoreDB == None:
-            return render_template("typingGame.html")
-        else:
-            hiscore = hiscoreDB[0]
-            return render_template("typingGame.html", hiscore=hiscore)
     cur.close()
-    
+
+    return render_template(render, hiscore=hiscoreDB, game=gameName, player="Player One")
+
+
+
 
 @app.route("/leaderboard")
 def leaderboard():
@@ -215,16 +221,20 @@ def leaderboard():
     scores_all = []
     names = []
     names_all = []
-
+    titles = []
     conn = sqlite3.connect("retro_arcade.db")
     cur = conn.cursor()
 
     cur.execute("SELECT game_id, game_name FROM games")
     games = cur.fetchall()
+    for i in range(len(games)):
+        j = str(games[i][1])
+        k = j.title()
+        titles.append(k)
 
     for i in range(len(games)):
         g = games[i][0]
-        cur.execute("SELECT ROW_NUMBER() OVER (ORDER BY hiscore) RowNum, id, hiscore FROM hiscores WHERE game_id = ?", (g,))
+        cur.execute("SELECT ROW_NUMBER() OVER (ORDER BY hiscore) RowNum, id, hiscore FROM hiscores WHERE game_id = ? LIMIT 10", (g,))
         score = cur.fetchall()
         scores_all.append(score)
         for i in range(len(score)):
@@ -235,7 +245,8 @@ def leaderboard():
         names_all.append(names)
     cur.close()
 
-    return render_template("leaderboard.html", player=player, scores_all=scores_all, names_all=names_all, games=games)
+    return render_template("leaderboard.html", player=player, scores_all=scores_all, names_all=names_all, games=games, titles=titles)
+
 
 class RegisterForm(Form):
     name = StringField("NAME:", [

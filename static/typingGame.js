@@ -2,7 +2,6 @@ let input = document.getElementById('playerInput');
 let gameScreen = document.querySelector("[data-gameScreen]")
 let scoreDisplay = document.querySelector("[data-scoreDisplay]")
 let highScoreDiv = document.querySelector("[data-highScore]")
-let hiddenHiscore = document.querySelector("[data-hiddenHiscore]");
 let body = document.querySelector("[data-body]")
 let currentString = ""
 let playerInput = ""
@@ -50,7 +49,7 @@ document.addEventListener('keydown', (e) => {
 )
 
 function startGame() {
-    if (document.querySelector(".currentString")) {
+    if (document.querySelector(".currentString") || (document.querySelector(".gameOver"))) {
         return
     } else {
         body.appendChild(div);
@@ -86,7 +85,6 @@ function newWord() {
     div.style.left = xInt.toString() + "%";
     div.style.top = 0
     wordFall();
-   console.log(timeInterval)
 }
 
 
@@ -121,8 +119,12 @@ function gameOver() {
     if (score > highScore) {
         highScore = score
         highScoreDiv.innerText = highScore
-        hiddenHiscore.value = highScore;
-    }
+        $.post("/Typing Game",
+        {
+        hiscore: score
+        }, 
+        "json" )
+        }
 }
 
 function updateDisplay() {

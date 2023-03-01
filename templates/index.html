@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% block script %}
+{% endblock %}
 
 {% block style %}
 
@@ -6,25 +8,47 @@ img {
     max-height: 10vw;
     max-width: 10vw;
 }
-a {
-    color: black;
+.img {
+    width: 15%;
 }
-a:hover {
-    color: #00fa00;
+.play {
+    width: 15% !important;
+}
+.innerContainer {
+    min-height: 10vw;
 }
 {% endblock %}
 
 {% block body %}
 
 {% for game in games %}
-    {% set name = game[0] %}
-    {% set image = game[1] %}
+    {% set id = game[0] %}
+    {% set name = game[1] %}
     {% set descrip = game[2] %}
-    <div class="d-flex justify-content-evenly container mx-auto my-4 w-75 bg-light border">
-        <div class="d-flex justify-content-center my-2 w-25 border img"><img class="img-thumbnail" src="{{ image }}"></div>
-        <div class="d-flex justify-content-center align-items-center fs-1 my-2 w-25 border"><a class="text-decoration-none" href="/{{ name }}">{{ name }}</a></div>
-        <div class="d-flex justify-content-center align-items-center my-2 px-2 fs-4 w-50 border">{{ descrip }}</div>
-    </div>
+    {% set title =  name|replace("_", " ") %}
+    <div class="d-flex flex-column container mx-auto mt-4 w-75 py-3 bg-light border game">  
+        <div class="d-flex h2 justify-content-center bg-light border border-bottom-0 inner  my-0 title">{{ title|upper }}</div>
+        <div class="d-flex container mx-auto bg-light border inner innerContainer">
+            <div class="d-flex justify-content-center mb-2 img"><img class="img-thumbnail" src="/static/{{ name }}.jpg"></div>
+            <div class="d-flex justify-content-center align-items-center mb-2 px-2 fs-4 w-75 inner ">{{ descrip }}</div>
+            <div class="d-flex justify-content-center align-items-center mb-2 px-2 play inner">
+                <button class="btn-lg h-50 w-50" onclick="window.location.href='/loadGame/{{ id }}'">PLAY</button>
+            </div>
+        </div>
+    </div> 
+        
 {% endfor %}
-
+<script>
+    document.getElementById("play").addEventListener('click', function () {
+        let 
+    })
+    button.addEventListener('click', (e) => {
+    gameId = e.val()
+    $.get("/loadGame/" + gameId,
+    {
+        hiscore: highScore
+    }, 
+    "json" )
+})
+</script>
 {% endblock %}

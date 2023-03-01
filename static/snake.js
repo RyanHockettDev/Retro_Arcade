@@ -5,7 +5,6 @@ let buttonUp = document.querySelector("[data-buttonUp]");
 let buttonDown = document.querySelector("[data-buttonDown]");
 let buttonLeft = document.querySelector("[data-buttonLeft]");
 let buttonRight = document.querySelector("[data-buttonRight]");
-let hiddenHiscore = document.querySelector("[data-hiddenHiscore]");
 let width = 20;
 let appleIndex = 0;
 let currentSnake = [197, 196, 195, 194];
@@ -72,7 +71,12 @@ if (checkForHits(squares)) {
     if (score > highScore){
     highScore = score;
     highScoreDisplay.innerHTML = highScore;
-    hiddenHiscore.value = highScore;
+    $.post("/loadGame/1",
+    {
+        hiscore: highScore
+    }, 
+    "json" )
+
     alert("GAME OVER\r\nNEW HIGH SCORE")
     } else {
         alert("GAME OVER");

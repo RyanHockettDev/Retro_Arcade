@@ -1,7 +1,31 @@
 {% extends "layout.html" %}
 
 {% block style %}
-
+.addGameForm {
+    background:#fff;
+    border: 4px solid white;
+    border-radius: 5px;
+    box-shadow:
+    inset 0 0 2px #fff,
+    inset 0 0 7px #fff,
+    inset 0 0 12px #fff,
+    inset 0 0 24px #d80101,
+    inset 0 0 40px #d80101,
+    inset 0 0 50px #d80101,
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 21px #fff,
+    0 0 40px #d80101,
+    0 0 60px #d80101,
+    0 0 85px #d80101;
+}
+.addGameForm label, .addGameForm h3, .addGameForm .btn {
+    color: #fff;
+    border-radius: 5px;
+}
+.under {
+    background: rgba(155,0,0,65%)
+}
 {% endblock %}
 
 {% block body %}
@@ -23,24 +47,43 @@
     <tbody class="table-group-divider">
 {% for score in scores_list %}
 {% set rank = score[0] %}
-{% set name = game_names[loop.index0] %}
+{% set title = titles[loop.index0] %}
 {% set hiscore = score[3] %}
 {% if rank == 1 %}
     <tr class="table-success">
-    <th scope="row">{{ rank }}</th>
-    <td>{{ name }}</td>
-    <td>{{ hiscore }}</td>
-    </tr> 
-    </tbody>
+{% elif rank == 2 %}
+    <tr class="table-warning">
+{% elif rank == 3 %} 
+    <tr class="table-info">
 {% else %}
     <tr>
+{% endif %}  
     <th scope="row">{{ rank }}</th>
-    <td>{{ name }}</td>
+    <td>{{ title|upper }}</td>
     <td>{{ hiscore }}</td>
     </tr> 
     </tbody>
-{% endif %}
 {% endfor %}
 </table>
 </div>
+{% if admin == 15698 %}
+<div class="contianer d-flex flex-column justify-content-evenly align-items-evenly w-50 my-5 mx-auto addGameForm">
+<div class="under w-100 p-2">
+<h3 class="mb-4 w-100 text-center">NEW GAME INTEGRATION FORM</h3>
+<form action="/" method="POST" class="d-flex justify-content-evenly align-items-center">
+    <div class="form-group">
+        <label class="text-center" for="gameName">GAME FILES NAME:</label><br>
+        <input class="mb-4 form-control" type="text" id="gameName" name="gameName" required="required">
+    </div>
+    <div class="form-group">
+        <label class="text-center" for="desc">DESCRIPTION:</label><br>
+        <textarea class="mb-4 form-control" type="textarea" id="desc" name="desc" required="required"></textarea>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="border btn  btn-lg btn-danger" value="INTEGRATE GAME">
+    </div>
+</form>
+</div>
+</div>
+{% endif %}
 {% endblock %}
