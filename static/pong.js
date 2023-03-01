@@ -261,6 +261,7 @@ canvas.addEventListener('mousedown', () => {
         context.clearRect((quarterLeft * .80), (topWall * 2.7), 300, 200);
         if (gameEnd){
             playerScoreDisplay.score = 0;
+            playerScore = 0;
             cpuScoreDisplay.score = 0;
             score.innerHTML = "SCORE: " + playerScoreDisplay.score;
             gameEnd = false;
@@ -302,12 +303,11 @@ setInterval(speedTracker, 100);
 
 function gameOver() {
     let prevHighScore = parseInt(highScore.innerHTML);
-    if (playerScoreDisplay.score > prevHighScore){
-        let newHighScore = playerScoreDisplay.score;
-        highScore.innerHTML = newHighScore;
+    if (playerScore> prevHighScore){
+        highScore.innerHTML = playerScore;
         $.post("/loadGame/2",
         {
-            hiscore: newHighScore
+            hiscore: playerScore
         }, 
         "json" )
         }
@@ -326,7 +326,11 @@ function updateBall() {
             gameBall.dx = -3;
         } else {
             playerScoreDisplay.score += 1;
-            score.innerHTML = "SCORE: " + playerScoreDisplay.score;
+            playerScore = playerScoreDisplay.score - cpuScoreDisplay.score;
+            if(playerScore < 0){
+                playerScore = 0;
+            }
+            score.innerHTML = "SCORE: " + playerScore;
             gameBall.dx = 3;
         };
         
