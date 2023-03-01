@@ -328,12 +328,12 @@ function updateBall() {
             playerScoreDisplay.score += 1;
             gameBall.dx = 3;
         };
-        playerScore = playerScoreDisplay.score - cpuScoreDisplay.score;
+        setTimeout(() => {
+            playerScore = playerScoreDisplay.score - cpuScoreDisplay.score;
             if(playerScore < 0){
                 playerScore = 0;
             }
             score.innerHTML = "SCORE: " + playerScore;
-        setTimeout(() => {
             gameBall.xPos = center;
             gameBall.yPos = topWall + 10;
             gameBall.dy = 1;
