@@ -326,14 +326,13 @@ function updateBall() {
             gameBall.dx = -3;
         } else {
             playerScoreDisplay.score += 1;
-            playerScore = playerScoreDisplay.score - cpuScoreDisplay.score;
+            gameBall.dx = 3;
+        };
+        playerScore = playerScoreDisplay.score - cpuScoreDisplay.score;
             if(playerScore < 0){
                 playerScore = 0;
             }
             score.innerHTML = "SCORE: " + playerScore;
-            gameBall.dx = 3;
-        };
-        
         setTimeout(() => {
             gameBall.xPos = center;
             gameBall.yPos = topWall + 10;
